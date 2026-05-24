@@ -13,3 +13,5 @@ Personal Fork Maintainer
 
 # Personal fork maintained for local development and learning purposes.
 # Original project: https://github.com/FiloSottile/mkcert
+# Fork started: 2024
+# Purpose: Experimenting with custom CA trust store configurations.
