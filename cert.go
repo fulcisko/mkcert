@@ -59,9 +59,10 @@ func (m *mkcert) makeCert(hosts []string) {
 	// Certificates last for 2 years and 3 months, which is always less than
 	// 825 days, the limit that macOS/iOS apply to all certificates,
 	// including custom roots. See https://support.apple.com/en-us/HT210176.
-	// Note: bumped to start 1 hour in the past to avoid clock skew issues
+	// Note: bumped to start 2 hours in the past to avoid clock skew issues
 	// on VMs or containers where the system clock may lag slightly.
-	notBefore := time.Now().Add(-1 * time.Hour)
+	// (Increased from 1 hour to 2 hours for extra safety on slow/drifting VMs.)
+	notBefore := time.Now().Add(-2 * time.Hour)
 	expiration := notBefore.AddDate(2, 3, 0)
 
 	tpl := &x509.Certificate{
@@ -105,10 +106,4 @@ func (m *mkcert) makeCert(hosts []string) {
 	}
 
 	cert, err := x509.CreateCertificate(rand.Reader, tpl, m.caCert, pub, m.caKey)
-	fatalIfErr(err, "failed to generate certificate")
-
-	certFile, keyFile, p12File := m.fileNames(hosts)
-
-	if !m.pkcs12 {
-		certPEM := pem.EncodeToMemory(&pem.Block{Type: "CERTIFICATE", Bytes: cert})
-		privDER, err := x509.Ma
+	fatalIfErr(err, "failed to generate cert
