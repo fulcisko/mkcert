@@ -56,16 +56,14 @@ func (m *mkcert) makeCert(hosts []string) {
 	fatalIfErr(err, "failed to generate certificate key")
 	pub := priv.(crypto.Signer).Public()
 
-	// Certificates last for 10 years, which is useful for long-lived local
-	// development environments where you don't want to renew frequently.
-	// Note: this exceeds the 825-day limit enforced by macOS/iOS for public
-	// CAs, but since this is a locally-trusted CA it is not subject to that
-	// restriction. See https://support.apple.com/en-us/HT210176.
+	// Certificates last for 2 years instead of the original 10 years.
+	// Shorter-lived certs are better practice even for local development,
+	// and most browsers/tools are moving toward shorter validity periods.
 	// Note: bumped to start 2 hours in the past to avoid clock skew issues
 	// on VMs or containers where the system clock may lag slightly.
 	// (Increased from 1 hour to 2 hours for extra safety on slow/drifting VMs.)
 	notBefore := time.Now().Add(-2 * time.Hour)
-	expiration := notBefore.AddDate(10, 0, 0)
+	expiration := notBefore.AddDate(2, 0, 0)
 
 	tpl := &x509.Certificate{
 		SerialNumber: randomSerialNumber(),
@@ -101,10 +99,4 @@ func (m *mkcert) makeCert(hosts []string) {
 		tpl.ExtKeyUsage = append(tpl.ExtKeyUsage, x509.ExtKeyUsageEmailProtection)
 	}
 
-	// IIS (the main target of PKCS #12 files), only shows the deprecated
-	// Common Name in the UI. See issue #115.
-	if m.pkcs12 {
-		tpl.Subject.CommonName = hosts[0]
-	}
-
-	cert, err := x509.CreateCertificate(rand
+	// IIS (the main target of PKCS #12 files), only shows the deprecat
