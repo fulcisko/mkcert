@@ -106,4 +106,4 @@ scoop bucket add extras
 scoop install mkcert
 ```
 
-> **Personal note**: On Windows I've had the best luck using Scoop — Chocolatey sometimes requires elevated permissions that can be annoying in a corporate environment.
+> **Personal note**: On Windows I've had the best luck using Scoop — it tends to stay more up to date than the Chocolatey package in my experience.
