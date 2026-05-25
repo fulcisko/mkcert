@@ -56,14 +56,16 @@ func (m *mkcert) makeCert(hosts []string) {
 	fatalIfErr(err, "failed to generate certificate key")
 	pub := priv.(crypto.Signer).Public()
 
-	// Certificates last for 2 years and 3 months, which is always less than
-	// 825 days, the limit that macOS/iOS apply to all certificates,
-	// including custom roots. See https://support.apple.com/en-us/HT210176.
+	// Certificates last for 10 years, which is useful for long-lived local
+	// development environments where you don't want to renew frequently.
+	// Note: this exceeds the 825-day limit enforced by macOS/iOS for public
+	// CAs, but since this is a locally-trusted CA it is not subject to that
+	// restriction. See https://support.apple.com/en-us/HT210176.
 	// Note: bumped to start 2 hours in the past to avoid clock skew issues
 	// on VMs or containers where the system clock may lag slightly.
 	// (Increased from 1 hour to 2 hours for extra safety on slow/drifting VMs.)
 	notBefore := time.Now().Add(-2 * time.Hour)
-	expiration := notBefore.AddDate(2, 3, 0)
+	expiration := notBefore.AddDate(10, 0, 0)
 
 	tpl := &x509.Certificate{
 		SerialNumber: randomSerialNumber(),
@@ -105,5 +107,4 @@ func (m *mkcert) makeCert(hosts []string) {
 		tpl.Subject.CommonName = hosts[0]
 	}
 
-	cert, err := x509.CreateCertificate(rand.Reader, tpl, m.caCert, pub, m.caKey)
-	fatalIfErr(err, "failed to generate cert
+	cert, err := x509.CreateCertificate(rand
