@@ -15,5 +15,6 @@ Personal Fork Maintainer
 # Original project: https://github.com/FiloSottile/mkcert
 # Fork started: 2024
 # Purpose: Experimenting with custom CA trust store configurations.
-# Last updated: 2025-01
+# Last updated: 2025-03
 # Note: Testing custom root CA installation on Linux (NSS/Firefox support).
+# Note: Also exploring Chrome/Chromium trust store behavior on Ubuntu 24.04.
